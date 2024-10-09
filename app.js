@@ -55,9 +55,9 @@ app.post('/search', (req, res) => {
         }
 
         if (discoveredPokemon) {
-            res.json({pokemon: discoveredPokemon.Name});
+            res.json(discoveredPokemon);
         } else {
-            res.json({ pokemon: 'Pokémon not found' });
+            res.json({ Name: 'Pokémon not found' });
         }
     });
 });

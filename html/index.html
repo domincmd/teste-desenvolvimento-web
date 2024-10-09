@@ -4,6 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pokedéx</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        html {
+            background: rgb(255,0,0);
+            background: linear-gradient(152deg, rgba(255,0,0,1) 0%, rgba(117,0,0,1) 100%); 
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+
+        }
+        .general-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .card {
+            height: 70vh;
+            aspect-ratio: 2/3;
+            background-color: #8080ff;
+            border: 10px solid rgb(216, 216, 0);
+            border-radius: 15px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+    </style>
 </head>
 <body>
     <div class="general-container">
@@ -13,27 +47,55 @@
             <button onclick="sendData()">Submit</button>
         </div>
         <div class="view-container">
-            <div class="card" id="pokemon-card">
-                {{pokemon}}
-            </div>
+            
         </div>
     </div>
 </body>
 <script>
+    // Function to display data
+    function displayData(data) {
+        const cardContainer = document.createElement("div");
+        cardContainer.classList.add("card");
+
+        // Loop through the object keys and values
+        Object.keys(data).forEach(key => {
+            const createdElement = document.createElement("span");
+            createdElement.textContent = `${key}: ${data[key]}`; // Display key and value
+            createdElement.classList.add(key.toLowerCase().replace(/ /g, "-"));
+            cardContainer.appendChild(createdElement);
+        });
+
+        console.log(cardContainer)
+
+        return cardContainer;
+    }
+
+    // Function to send data
     function sendData() {
         const pokemon = document.getElementById('name-of-pokemon').value;
 
+        // Validate if input is not empty
+        if (!pokemon) {
+            alert("Please enter a Pokémon name");
+            return;
+        }
+
+        // Fetch request to send the Pokémon name
         fetch('/search', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ pokemon: pokemon }),
+            body: JSON.stringify({ pokemon: pokemon }), // Send name as JSON
         })
         .then(response => response.json())
         .then(data => {
-            // Update the card with the Pokémon name or message
-            document.getElementById('pokemon-card').textContent = data.pokemon;
+            // Clear the view-container before displaying new data
+            const viewContainer = document.querySelector(".view-container");
+            viewContainer.innerHTML = ""; // Clear previous content
+            console.log(data.Name)
+            // Append the new card
+            viewContainer.appendChild(displayData(data));
         })
         .catch(error => {
             console.error('Error:', error);

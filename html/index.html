@@ -4,16 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pokedéx</title>
-    <link rel="stylesheet" href="../static/styles.css">
 </head>
 <body>
     <div class="general-container">
         <div class="search-container">
-            <form action="/search">
-                <label for="name-of-pokemon">Name:</label>
-                <input type="text" name="name-of-pokemon">
-                <input type="submit">
-            </form>
+            <span>Name:</span><br>
+            <input type="text" name="name-of-pokemon" id="name-of-pokemon">
+            <button onclick="sendData()">Submit</button>
         </div>
         <div class="view-container">
             <div class="card">
@@ -22,4 +19,24 @@
         </div>
     </div>
 </body>
+<script>
+    function sendData() {
+        const pokemon = document.getElementById('name-of-pokemon').value;
+            
+        fetch('/search', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ pokemon: pokemon }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+</script>
 </html>

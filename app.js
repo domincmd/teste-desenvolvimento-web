@@ -43,22 +43,24 @@ app.get('/', (req, res) => {
 });
 
 app.post('/search', (req, res) => {
-    const body = req.body
+    const body = req.body;
+    const pokemon = body.pokemon;  // Form input name is "pokemon"
+    const discoveredPokemon = getPokemonData(pokemon);
 
-    const pokemon = body.pokemon
-    
-    const discoveredPokemon = getPokemonData(pokemon)
+    // Read the HTML file and dynamically inject the Pokémon data
+    fs.readFile(path.join(__dirname, 'html', 'index.html'), 'utf8', (err, content) => {
+        if (err) {
+            res.status(500).send('Error reading the HTML file');
+            return;
+        }
 
-    if (discoveredPokemon) {
-        fs.readFile(path.join(__dirname, 'html', 'index.html'), "utf8", (err, content) => {
-            let modifiedHtml = content.replace('{{pokemon}}', discoveredPokemon["Name"])
-            res.send(modifiedHtml)
-        });
-    }
-    
-    
-
-})
+        if (discoveredPokemon) {
+            res.json({pokemon: discoveredPokemon.Name});
+        } else {
+            res.json({ pokemon: 'Pokémon not found' });
+        }
+    });
+});
 // Start the server
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);

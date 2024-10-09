@@ -21,16 +21,18 @@ app.use(express.json())
 //functions before the actual get and post requests
 
 function getPokemonData(pokemon) {
-    for (let i = 0; i < data.length(); i++) {
-        if (data[i].name.toLowerCase() == pokemon.toLowerCase()) {
-            const discoveredPokemon = data[i]
-            console.log(discoveredPokemon)
+    
+    for (let i = 0; i < data.length; i++) {
+        if (data[i]["Name"] === pokemon) {
+            const discoveredPokemon = data[i];
+
             return discoveredPokemon;
         }
     }
 
     return null;
 }
+
 
 
 
@@ -45,11 +47,18 @@ app.post('/search', (req, res) => {
 
     const pokemon = body.pokemon
     
-    getPokemonData(pokemon)
+    const discoveredPokemon = getPokemonData(pokemon)
 
-    res.sendFile(path.join(__dirname, 'html', 'index.html')); //send it with the frontend info after the processing
+    if (discoveredPokemon) {
+        fs.readFile(path.join(__dirname, 'html', 'index.html'), "utf8", (err, content) => {
+            let modifiedHtml = content.replace('{{pokemon}}', discoveredPokemon["Name"])
+            res.send(modifiedHtml)
+        });
+    }
+    
+    
+
 })
-
 // Start the server
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);

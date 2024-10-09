@@ -1,0 +1,16 @@
+{
+  "name": "teste-desenvolvimento-web",
+  "version": "1.0.0",
+  "description": "just an attempt, Im 13, just wanna have fun",
+  "main": "app.js",
+  "scripts": {
+    "test": "node app.js"
+  },
+  "author": "domincmd",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.3",
+    "express": "^4.21.1",
+    "fs": "^0.0.1-security"
+  }
+}

@@ -57,9 +57,7 @@
                 <input type="text" name="name-of-pokemon" id="name-of-pokemon">
                <button onclick="sendData()">Submit</button>
             </div>
-            <div class="filter-container">
-
-            </div>
+            
             
             
         </div>
@@ -69,13 +67,31 @@
     </div>
 </body>
 <script>
-    function searchFiltered(button) {
-        //get the filters and the states
+    
 
-        //search the database
+    function getFilters() {
+        const filterDiv = document.querySelector(".filter-container");
 
-        return;
+        let filters = []
+
+        for (let i = 0; i < filterDiv.childNodes.length-1; i++) {
+            const currentDiv = filterDiv.childNodes[i];
+
+            if (currentDiv.nodeType === 1) { // Ensure it's an element node
+                const filter = currentDiv.querySelector("span").textContent;
+                const filterState = currentDiv.querySelector("input").checked;
+
+                if (filterState) {
+                    filters.push(filter)
+                }
+
+                console.log("FILTER: " + filter + "\nSTATE: " + filterState);
+            }
+        }
+
+        return filters;
     }
+
 
     function displayFilters(filters) {
         const filtersDiv = document.createElement("div")
@@ -83,12 +99,18 @@
 
         const filterButton = document.createElement("button");
         filterButton.textContent = "Filter";
-        filterButton.onclick = "searchFiltered(this);"
-        filtersDiv.appendChild(filterButton)
+        filterButton.addEventListener("click", e => {
+            const filters = getFilters()
+
+            searchFiltered(filters)
+            
+        });
+        
 
         for (let i = 0; i < filters.length; i++) {
             const currentDiv = document.createElement("div")
             currentDiv.classList.add("filter")
+            currentDiv.classList.add(i)
 
             const currentInput = document.createElement("input")
             currentInput.type = "checkbox";
@@ -100,6 +122,8 @@
 
             filtersDiv.appendChild(currentDiv)
         }
+
+        filtersDiv.appendChild(filterButton)
 
         return filtersDiv;
     }
@@ -167,6 +191,24 @@
             console.log(data.Name)
             // Append the new card
             viewContainer.appendChild(displayData(data));
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+
+    function searchFiltered(presentFilters) {
+        fetch('/search-filtered', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ filters: presentFilters }), // Send name as JSON
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Clear the view-container before displaying new data
+            console.log(data)
         })
         .catch(error => {
             console.error('Error:', error);

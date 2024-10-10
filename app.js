@@ -72,6 +72,17 @@ app.post('/search', (req, res) => {
         }
     });
 });
+
+app.post("/search-filtered", (req, res) => {
+    const filters = req.body.filters
+
+    for (let i = 0; i < data.length; i++) {
+        for (let j = 0; j < data[i].length; j++) {
+            //do some looping here cuz i'm too lazy to actually do it
+        }
+    }
+})
+
 // Start the server
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);

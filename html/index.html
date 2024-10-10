@@ -69,9 +69,22 @@
     </div>
 </body>
 <script>
+    function searchFiltered(button) {
+        //get the filters and the states
+
+        //search the database
+
+        return;
+    }
+
     function displayFilters(filters) {
         const filtersDiv = document.createElement("div")
         filtersDiv.classList.add("filter-container")
+
+        const filterButton = document.createElement("button");
+        filterButton.textContent = "Filter";
+        filterButton.onclick = "searchFiltered(this);"
+        filtersDiv.appendChild(filterButton)
 
         for (let i = 0; i < filters.length; i++) {
             const currentDiv = document.createElement("div")

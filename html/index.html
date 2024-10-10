@@ -69,7 +69,7 @@
 <script>
     
 
-    function getFilters() {
+    function getFiltersFrontend() {
         const filterDiv = document.querySelector(".filter-container");
 
         let filters = []
@@ -100,7 +100,7 @@
         const filterButton = document.createElement("button");
         filterButton.textContent = "Filter";
         filterButton.addEventListener("click", e => {
-            const filters = getFilters()
+            const filters = getFiltersFrontend()
 
             searchFiltered(filters)
             
@@ -147,7 +147,7 @@
         return cardContainer;
     }
 
-    function getFilters() {
+    function getFiltersBackend() {
         fetch('/filters', {
             method: 'POST',
             headers: {

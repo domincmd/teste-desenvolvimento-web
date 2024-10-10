@@ -44,7 +44,7 @@ app.get('/', (req, res) => {
 
 app.post("/filters", (req, res) => {
     
-    const reference = data[0] //get a reference pokemon to get the possible filters
+    const reference = data[1] //get a reference pokemon to get the possible filters
 
     const filters = Object.keys(reference).filter(key => reference[key] === 0 || reference[key] === 1)
 
@@ -74,14 +74,30 @@ app.post('/search', (req, res) => {
 });
 
 app.post("/search-filtered", (req, res) => {
-    const filters = req.body.filters
+    const filters = req.body.filters;
 
-    for (let i = 0; i < data.length; i++) {
-        for (let j = 0; j < data[i].length; j++) {
-            //do some looping here cuz i'm too lazy to actually do it
+    console.log(filters); // Logs an array of things like "Spawns", "Regional", etc.
+
+    let items = [];
+
+    data.forEach((datai) => {
+        let includeItem = true;
+
+        // Loop through the filters and check if datai meets the conditions
+        filters.forEach((filter) => {
+            if (!datai[filter] || datai[filter] === 0) {
+                includeItem = false;
+            }
+        });
+
+        if (includeItem) {
+            items.push(datai);
         }
-    }
-})
+    });
+
+    res.json({ answer: items });
+});
+
 
 // Start the server
 app.listen(port, () => {

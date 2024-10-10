@@ -23,7 +23,7 @@ app.use(express.json())
 function getPokemonData(pokemon) {
     
     for (let i = 0; i < data.length; i++) {
-        if (data[i]["Name"] === pokemon) {
+        if (data[i]["Name"].toLowerCase() === pokemon.toLowerCase()) {
             const discoveredPokemon = data[i];
 
             return discoveredPokemon;
@@ -40,6 +40,17 @@ function getPokemonData(pokemon) {
 // Route to serve the HTML file
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'html', 'index.html'));
+});
+
+app.post("/filters", (req, res) => {
+    
+    const reference = data[0] //get a reference pokemon to get the possible filters
+
+    const filters = Object.keys(reference).filter(key => reference[key] === 0 || reference[key] === 1)
+
+    //console.log(filters)
+
+    res.json(filters)
 });
 
 app.post('/search', (req, res) => {

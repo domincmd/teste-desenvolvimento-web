@@ -35,23 +35,63 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            color: white;
+            color: black;
+        }
+
+        .search-filter-container {
+            width: 30%;
+            background-color: white;
+            border-radius: 15px;
+            border: 1px solid black;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
     </style>
 </head>
 <body>
     <div class="general-container">
-        <div class="search-container">
-            <span>Name:</span><br>
-            <input type="text" name="name-of-pokemon" id="name-of-pokemon">
-            <button onclick="sendData()">Submit</button>
+        <div class="search-filter-container">
+            <div class="search-container">
+                <span>Name:</span><br>
+                <input type="text" name="name-of-pokemon" id="name-of-pokemon">
+               <button onclick="sendData()">Submit</button>
+            </div>
+            <div class="filter-container">
+
+            </div>
+            
+            
         </div>
         <div class="view-container">
-            
+
         </div>
     </div>
 </body>
 <script>
+    function displayFilters(filters) {
+        const filtersDiv = document.createElement("div")
+        filtersDiv.classList.add("filter-container")
+
+        for (let i = 0; i < filters.length; i++) {
+            const currentDiv = document.createElement("div")
+            currentDiv.classList.add("filter")
+
+            const currentInput = document.createElement("input")
+            currentInput.type = "checkbox";
+            currentDiv.appendChild(currentInput)
+
+            const currentInputText = document.createElement("span")
+            currentInputText.textContent = filters[i]
+            currentDiv.appendChild(currentInputText)
+
+            filtersDiv.appendChild(currentDiv)
+        }
+
+        return filtersDiv;
+    }
+
+
     // Function to display data
     function displayData(data) {
         const cardContainer = document.createElement("div");
@@ -68,6 +108,24 @@
         console.log(cardContainer)
 
         return cardContainer;
+    }
+
+    function getFilters() {
+        fetch('/filters', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }//,
+            //body: JSON.stringify({ message: "get checkboxes" }), // Send name as JSON
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.querySelector(".search-filter-container").appendChild(displayFilters(data))
+            
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
     }
 
     // Function to send data

@@ -5,10 +5,8 @@ const bodyParser = require('body-parser')
 const fs = require('fs')
 
 // Declare constants
-const port = 3000;
+const port = 5000;
 const jsonData = fs.readFileSync(path.join(__dirname, "/database.json"), 'utf-8'); //get the json data
-
-// Parsing JSON data to JavaScript object
 const data = JSON.parse(jsonData);
 
 // Initialize the express app
@@ -31,7 +29,7 @@ function getPokemonData(pokemon, type) {
         }
     }else if (type == "int") {
         for (let i = 0; i < data.length; i++) {
-            if (data[i]["Pokedex Number"] == pokemon ) {
+            if (data[i]["Row"] == pokemon ) {
                 const discoveredPokemon = data[i];
     
                 return discoveredPokemon;
@@ -111,6 +109,51 @@ app.post("/search/search-filtered", (req, res) => {
     res.json({ answer: items });
 });
 
+app.post("/search/update", (req, res) => {
+
+    fs.writeFile(path.join(__dirname, "database.json"), JSON.stringify(data, null, 2), (err) => {
+        if (err) {
+            res.json({result: false, status: err})
+            return;
+        }
+        res.json({result: true, status: "completed successfully"})
+    });
+
+    
+})
+
+app.post("/search/remove", (req, res) => {
+    const pokemonI = req.body.pokemon;
+
+    // Check if the index is valid
+    if (pokemonI <= 0 || pokemonI > data.length) {
+        return res.status(400).send("Invalid pokemon index");
+    }
+
+    // Remove the specific item at index (pokemonI - 1)
+    data.splice(pokemonI - 1, 1);  // Removing one element at pokemonI - 1
+
+    // Update the row index for the remaining elements
+    for (let i = pokemonI - 1; i < data.length; i++) {  // Start from the removed index
+        data[i].Row -= 1;
+    }
+
+    res.send("Pokemon removed successfully");
+});
+
+app.post("/search/add", (req, res) => {
+    const toAdd = req.body;
+
+    data.splice(toAdd.Row-1, 0, toAdd)
+
+    for (let i = toAdd.Row; i < data.length; i++) {  //start from the removed index
+        data[i].Row += 1;
+    }
+
+    console.log(data.slice(0, 5))
+
+    res.json({result: true, status: "completed successfully"}) //send the positive result till I find a way to send the negative
+})
 
 app.post("/view/data-request", (req, res) => {
     res.json(data)

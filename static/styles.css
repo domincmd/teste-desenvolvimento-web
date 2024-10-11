@@ -4,21 +4,82 @@
 }
 
 html {
-    background-color: rgb(255, 94, 94);
-}
+    background: rgb(255,0,0);
+    background: linear-gradient(152deg, rgba(255,0,0,1) 0%, rgba(117,0,0,1) 100%); 
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
 
+}
 .general-container {
     width: 100vw;
     height: 100vh;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
 }
 
 .card {
-    width: 50%;
+    height: 70vh;
     aspect-ratio: 2/3;
     background-color: #8080ff;
-    border: 10px solid yellow;
+    border: 10px solid rgb(216, 216, 0);
     border-radius: 15px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: black;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.search-filter-container {
+    
+    top: 10px;
+    left: 10px;
+}
+
+.search-container {
+    background-color: white;
+    border-radius: 15px;
+    border: 1px solid black;
+    padding: 15px;
+    width: 20%;
+}
+.filter-container {
+    background-color: white;
+    border-radius: 15px;
+    border: 1px solid black;
+    padding: 15px;
+    width: 15%;
+}
+
+.filter-results {
+    background-color: gray;
+    color: white;
+    padding: 15px;
+    border: 1px solid black;
+    border-radius: 15px;
+    overflow: scroll;
+    max-height: 250px;
+    width: 15%;
+}
+
+.action-container {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}
+
+.action-container > button {
+    width: 40px;
+    height: 40px;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 2rem;
+    cursor: pointer;
+}
+
+.action-container > button.double {
+    width: 85px;
+    height: 40px;
 }

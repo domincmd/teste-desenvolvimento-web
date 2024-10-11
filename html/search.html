@@ -4,50 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pokedéx</title>
-    <style>
-        * {
-            padding: 0;
-            margin: 0;
-        }
-
-        html {
-            background: rgb(255,0,0);
-            background: linear-gradient(152deg, rgba(255,0,0,1) 0%, rgba(117,0,0,1) 100%); 
-            font-family: Verdana, Geneva, Tahoma, sans-serif;
-
-        }
-        .general-container {
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-        }
-
-        .card {
-            height: 70vh;
-            aspect-ratio: 2/3;
-            background-color: #8080ff;
-            border: 10px solid rgb(216, 216, 0);
-            border-radius: 15px;
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: black;
-        }
-
-        .search-filter-container {
-            width:50%;
-            background-color: white;
-            border-radius: 15px;
-            border: 1px solid black;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-    </style>
+    <link rel="stylesheet" href="../static/styles.css">
 </head>
 <body>
     <div class="general-container">
@@ -56,7 +13,7 @@
                 <span>Name:</span><br>
                 <input type="text" name="name-of-pokemon" id="name-of-pokemon">
                <button onclick="sendData('str')">Submit</button>
-               <button onclick="sendData('int')">Submit Int</button>
+               <button onclick="sendData('int')">Submit Int</button><br>
             </div>
             
             
@@ -65,184 +22,264 @@
         <div class="view-container">
 
         </div>
+        <div class="action-container">
+            <button onclick="queryRemoval()">-</button>
+            <button onclick="queryAddition()">+</button><br>
+            <button onclick="queryUpdate()" class="double">Upd</button>
+        </div>
     </div>
 </body>
 <script>
-    const searchFilterContainer = document.querySelector(".search-filter-container")
+const searchFilterContainer = document.querySelector(".search-filter-container")
+const viewContainer = document.querySelector(".view-container")
 
+function queryAddition() {
+    const toAdd = JSON.parse(prompt("what to add bruh"));
 
-    function displayFilterResults(filters) {
-        const resultContainer = document.createElement("div")
-        resultContainer.classList.add("filter-results")
+    //set what element to add here
 
-
-        filters.answer.forEach(i => {
-            const iDisplay = document.createElement("span")
-            const br = document.createElement("br")
-            iDisplay.textContent = i.Name;
-            resultContainer.appendChild(iDisplay)
-            resultContainer.appendChild(br)
-        })
-
-        return resultContainer;
-    }
-
-    function getFiltersFrontend() {
-        const filterDiv = document.querySelector(".filter-container");
-
-        let filters = []
-
-        for (let i = 0; i < filterDiv.childNodes.length-1; i++) {
-            const currentDiv = filterDiv.childNodes[i];
-
-            if (currentDiv.nodeType === 1) { // Ensure it's an element node
-                const filter = currentDiv.querySelector("span").textContent;
-                const filterState = currentDiv.querySelector("input").checked;
-
-                if (filterState) {
-                    filters.push(filter)
-                }
-
-                console.log("FILTER: " + filter + "\nSTATE: " + filterState);
-            }
+    fetch('/search/add', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(toAdd), // Send name as JSON
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.result != true) {
+            alert(data.status)
+        } else{
+            alert("successfully updated the database!")
         }
-
-        return filters;
-    }
-
-
-    function displayFilters(filters) {
-        const filtersDiv = document.createElement("div")
-        filtersDiv.classList.add("filter-container")
-
-        const filterButton = document.createElement("button");
-        filterButton.textContent = "Filter";
-        filterButton.addEventListener("click", e => {
-            const filters = getFiltersFrontend()
-
-            searchFiltered(filters)
-            
-        });
         
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
 
-        for (let i = 0; i < filters.length; i++) {
-            const currentDiv = document.createElement("div")
-            currentDiv.classList.add("filter")
-            currentDiv.classList.add(i)
-
-            const currentInput = document.createElement("input")
-            currentInput.type = "checkbox";
-            currentDiv.appendChild(currentInput)
-
-            const currentInputText = document.createElement("span")
-            currentInputText.textContent = filters[i]
-            currentDiv.appendChild(currentInputText)
-
-            filtersDiv.appendChild(currentDiv)
+function queryUpdate() {
+    fetch('/search/update', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        //body: JSON.stringify({ pokemon: pokemonI }), // Send name as JSON
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.result != true) {
+            alert(data.status)
+        } else{
+            alert("successfully updated the database!")
         }
+        
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
 
-        filtersDiv.appendChild(filterButton)
-
-        return filtersDiv;
-    }
-
-
-    // Function to display data
-    function displayData(data) {
-        const cardContainer = document.createElement("div");
-        cardContainer.classList.add("card");
-
-        // Loop through the object keys and values
-        Object.keys(data).forEach(key => {
-            const createdElement = document.createElement("span");
-            createdElement.textContent = `${key}: ${data[key]}`; // Display key and value
-            createdElement.classList.add(key.toLowerCase().replace(/ /g, "-"));
-            cardContainer.appendChild(createdElement);
-        });
-
-        console.log(cardContainer)
-
-        return cardContainer;
-    }
-
-    function getFiltersBackend() {
-        fetch('/search/filters', {
+function queryRemoval() {
+    if (viewContainer.querySelector(".card")) {
+        const pokemonI = document.querySelector(".card").querySelector(".row").innerHTML.slice(5)
+        fetch('/search/remove', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-            }//,
-            //body: JSON.stringify({ message: "get checkboxes" }), // Send name as JSON
+            },
+            body: JSON.stringify({ pokemon: pokemonI }), // Send name as JSON
         })
         .then(response => response.json())
         .then(data => {
-            searchFilterContainer.appendChild(displayFilters(data))
+            alert(data)
             
         })
         .catch(error => {
             console.error('Error:', error);
         });
+
+
+    }else{
+        alert("select a card before removing it!")
+        return null;
     }
+}
 
-    // Function to send data
-    function sendData(type) {
-        const pokemon = document.getElementById('name-of-pokemon').value;
 
-        // Validate if input is not empty
-        if (!pokemon) {
-            alert("Please enter a Pokémon name");
-            return;
-        }
+function displayFilterResults(filters) {
+    const resultContainer = document.createElement("div")
+    resultContainer.classList.add("filter-results")
 
-        // Fetch request to send the Pokémon name
-        fetch('/search/search', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ pokemon: pokemon, type: type }), // Send name as JSON
-        })
-        .then(response => response.json())
-        .then(data => {
-            // Clear the view-container before displaying new data
-            const viewContainer = document.querySelector(".view-container");
-            viewContainer.innerHTML = ""; // Clear previous content
-            console.log(data.Name)
-            // Append the new card
-            viewContainer.appendChild(displayData(data));
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-    }
 
-    function searchFiltered(presentFilters) {
-        fetch('/search/search-filtered', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ filters: presentFilters }), // Send name as JSON
-        })
-        .then(response => response.json())
-        .then(data => {
-            // Clear the view-container before displaying new data
-            console.log(data)
-            const filtersDiv = displayFilterResults(data)
-            
-            if (searchFilterContainer.querySelector(".filter-results")) {
-                searchFilterContainer.removeChild(searchFilterContainer.querySelector(".filter-results"))
+    filters.answer.forEach(i => {
+        const iDisplay = document.createElement("span")
+        const br = document.createElement("br")
+        iDisplay.textContent = i.Name;
+        resultContainer.appendChild(iDisplay)
+        resultContainer.appendChild(br)
+    })
+
+    return resultContainer;
+}
+
+function getFiltersFrontend() {
+    const filterDiv = document.querySelector(".filter-container");
+
+    let filters = []
+
+    for (let i = 0; i < filterDiv.childNodes.length-1; i++) {
+        const currentDiv = filterDiv.childNodes[i];
+
+        if (currentDiv.nodeType === 1) { // Ensure it's an element node
+            const filter = currentDiv.querySelector("span").textContent;
+            const filterState = currentDiv.querySelector("input").checked;
+
+            if (filterState) {
+                filters.push(filter)
             }
-            
-            searchFilterContainer.appendChild(filtersDiv)
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
+
+            console.log("FILTER: " + filter + "\nSTATE: " + filterState);
+        }
     }
 
+    return filters;
+}
 
-    //call functions
 
-    getFiltersBackend()
+function displayFilters(filters) {
+    const filtersDiv = document.createElement("div")
+    filtersDiv.classList.add("filter-container")
+
+    const filterButton = document.createElement("button");
+    filterButton.textContent = "Filter";
+    filterButton.addEventListener("click", e => {
+        const filters = getFiltersFrontend()
+
+        searchFiltered(filters)
+        
+    });
+    
+
+    for (let i = 0; i < filters.length; i++) {
+        const currentDiv = document.createElement("div")
+        currentDiv.classList.add("filter")
+        currentDiv.classList.add(i)
+
+        const currentInput = document.createElement("input")
+        currentInput.type = "checkbox";
+        currentDiv.appendChild(currentInput)
+
+        const currentInputText = document.createElement("span")
+        currentInputText.textContent = filters[i]
+        currentDiv.appendChild(currentInputText)
+
+        filtersDiv.appendChild(currentDiv)
+    }
+
+    filtersDiv.appendChild(filterButton)
+
+    return filtersDiv;
+}
+
+
+// Function to display data
+function displayData(data) {
+    const cardContainer = document.createElement("div");
+    cardContainer.classList.add("card");
+
+    // Loop through the object keys and values
+    Object.keys(data).forEach(key => {
+        const createdElement = document.createElement("span");
+        createdElement.textContent = `${key}: ${data[key]}`; // Display key and value
+        createdElement.classList.add(key.toLowerCase().replace(/ /g, "-"));
+        cardContainer.appendChild(createdElement);
+    });
+
+    console.log(cardContainer)
+
+    return cardContainer;
+}
+
+function getFiltersBackend() {
+    fetch('/search/filters', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }//,
+        //body: JSON.stringify({ message: "get checkboxes" }), // Send name as JSON
+    })
+    .then(response => response.json())
+    .then(data => {
+        searchFilterContainer.appendChild(displayFilters(data))
+        
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+// Function to send data
+function sendData(type) {
+    const pokemon = document.getElementById('name-of-pokemon').value;
+
+    // Validate if input is not empty
+    if (!pokemon) {
+        alert("Please enter a Pokémon name");
+        return;
+    }
+
+    // Fetch request to send the Pokémon name
+    fetch('/search/search', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ pokemon: pokemon, type: type }), // Send name as JSON
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Clear the view-container before displaying new data
+        const viewContainer = document.querySelector(".view-container");
+        viewContainer.innerHTML = ""; // Clear previous content
+        console.log(data.Name)
+        // Append the new card
+        viewContainer.appendChild(displayData(data));
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+function searchFiltered(presentFilters) {
+    fetch('/search/search-filtered', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ filters: presentFilters }), // Send name as JSON
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Clear the view-container before displaying new data
+        console.log(data)
+        const filtersDiv = displayFilterResults(data)
+        
+        if (searchFilterContainer.querySelector(".filter-results")) {
+            searchFilterContainer.removeChild(searchFilterContainer.querySelector(".filter-results"))
+        }
+        
+        searchFilterContainer.appendChild(filtersDiv)
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+
+//call functions
+
+getFiltersBackend()
 </script>
 </html>

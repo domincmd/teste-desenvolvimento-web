@@ -55,7 +55,8 @@
             <div class="search-container">
                 <span>Name:</span><br>
                 <input type="text" name="name-of-pokemon" id="name-of-pokemon">
-               <button onclick="sendData()">Submit</button>
+               <button onclick="sendData('str')">Submit</button>
+               <button onclick="sendData('int')">Submit Int</button>
             </div>
             
             
@@ -183,7 +184,7 @@
     }
 
     // Function to send data
-    function sendData() {
+    function sendData(type) {
         const pokemon = document.getElementById('name-of-pokemon').value;
 
         // Validate if input is not empty
@@ -198,7 +199,7 @@
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ pokemon: pokemon }), // Send name as JSON
+            body: JSON.stringify({ pokemon: pokemon, type: type }), // Send name as JSON
         })
         .then(response => response.json())
         .then(data => {

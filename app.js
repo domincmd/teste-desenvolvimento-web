@@ -20,20 +20,35 @@ app.use(express.json())
 
 //functions before the actual get and post requests
 
-function getPokemonData(pokemon) {
+function getPokemonData(pokemon, type) {
+    if (type == "str") {
+        for (let i = 0; i < data.length; i++) {
+            if (data[i]["Name"].toLowerCase() === pokemon.toLowerCase() ) {
+                const discoveredPokemon = data[i];
     
-    for (let i = 0; i < data.length; i++) {
-        if (data[i]["Name"].toLowerCase() === pokemon.toLowerCase()) {
-            const discoveredPokemon = data[i];
-
-            return discoveredPokemon;
+                return discoveredPokemon;
+            }
         }
+    }else if (type == "int") {
+        for (let i = 0; i < data.length; i++) {
+            if (data[i]["Pokedex Number"] == pokemon ) {
+                const discoveredPokemon = data[i];
+    
+                return discoveredPokemon;
+            }
+        }
+    }else {
+        return null
     }
+    
 
-    return null;
 }
 
-
+function isNumeric(str) {
+    if (typeof str != "string") return false // we only process strings!  
+    return isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
+           isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
+}
 
 
 
@@ -56,7 +71,7 @@ app.post("/filters", (req, res) => {
 app.post('/search', (req, res) => {
     const body = req.body;
     const pokemon = body.pokemon;  // Form input name is "pokemon"
-    const discoveredPokemon = getPokemonData(pokemon);
+    const discoveredPokemon = getPokemonData(pokemon, body.type);
 
     // Read the HTML file and dynamically inject the Pokémon data
     fs.readFile(path.join(__dirname, 'html', 'index.html'), 'utf8', (err, content) => {
@@ -103,3 +118,4 @@ app.post("/search-filtered", (req, res) => {
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
+

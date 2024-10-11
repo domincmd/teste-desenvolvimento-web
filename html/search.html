@@ -24,17 +24,85 @@
         </div>
         <div class="action-container">
             <button onclick="queryRemoval()">-</button>
-            <button onclick="queryAddition()">+</button><br>
+            <button onclick="promptAddition()">+</button><br>
             <button onclick="queryUpdate()" class="double">Upd</button>
+        </div>
+        <div class="addition-container">
+            <h1>Add an element</h1>
+            
         </div>
     </div>
 </body>
 <script>
 const searchFilterContainer = document.querySelector(".search-filter-container")
 const viewContainer = document.querySelector(".view-container")
+const additionContainer = document.querySelector(".addition-container")
 
-function queryAddition() {
-    const toAdd = JSON.parse(prompt("what to add bruh"));
+function decodeAddition() {
+    const properties = additionContainer.querySelectorAll(".prompt-addition")
+    const finalDict = {}
+
+    properties.forEach(property => { 
+        finalDict[property.classList.item(1).replace(/-/g, " ")] = property.value // Fixed here
+    })
+
+    //console.log(finalDict)
+    return finalDict
+}
+
+
+function promptAddition() {
+    additionContainer.style.display = "block";
+
+    fetch('/view/data-request', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        Object.keys(data[1]).forEach(key => {
+            const createdLabel = document.createElement("span");
+            createdLabel.textContent = `${key}`; // Display key and value
+
+            const createdInput = document.createElement("input")
+            createdInput.type = "text"
+            createdInput.classList.add("prompt-addition")
+            createdInput.classList.add(key.replace(/ /g, "-"))
+
+            additionContainer.appendChild(createdLabel)
+            additionContainer.appendChild(createdInput)
+            additionContainer.appendChild(document.createElement("br"))
+        });    
+        
+        const submitButton = document.createElement("button")
+
+        submitButton.textContent = "Submit"
+        submitButton.addEventListener("click", e => {
+            const toAdd = decodeAddition()
+
+            queryAddition(toAdd)
+
+            const properties = additionContainer.querySelectorAll(".prompt-addition")
+
+            properties.forEach(property => { 
+                property.value = "";
+            })
+
+            additionContainer.display = "none";
+        })
+
+        additionContainer.appendChild(submitButton)
+
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+function queryAddition(toAdd) {
+    //const toAdd = promptAddition();
 
     //set what element to add here
 

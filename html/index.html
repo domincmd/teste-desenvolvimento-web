@@ -39,7 +39,7 @@
         }
 
         .search-filter-container {
-            width: 30%;
+            width:50%;
             background-color: white;
             border-radius: 15px;
             border: 1px solid black;
@@ -67,7 +67,20 @@
     </div>
 </body>
 <script>
-    
+    function displayFilterResults(filters) {
+        const resultContainer = document.createElement("div")
+
+
+        filters.answer.forEach(i => {
+            const iDisplay = document.createElement("span")
+            const br = document.createElement("br")
+            iDisplay.textContent = i.Name;
+            resultContainer.appendChild(iDisplay)
+            resultContainer.appendChild(br)
+        })
+
+        return resultContainer;
+    }
 
     function getFiltersFrontend() {
         const filterDiv = document.querySelector(".filter-container");
@@ -209,6 +222,9 @@
         .then(data => {
             // Clear the view-container before displaying new data
             console.log(data)
+            const filtersDiv = displayFilterResults(data)
+
+            
         })
         .catch(error => {
             console.error('Error:', error);

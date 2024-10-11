@@ -44,20 +44,18 @@ function getPokemonData(pokemon, type) {
 
 }
 
-function isNumeric(str) {
-    if (typeof str != "string") return false // we only process strings!  
-    return isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
-           isNaN(parseFloat(str)) // ...and ensure strings of whitespace fail
-}
 
 
+app.get("/view", (req, res) => {
+    res.sendFile(path.join(__dirname, 'html', 'view.html'))
+})
 
 // Route to serve the HTML file
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'html', 'index.html'));
+app.get('/search', (req, res) => {
+    res.sendFile(path.join(__dirname, 'html', 'search.html'));
 });
 
-app.post("/filters", (req, res) => {
+app.post("/search/filters", (req, res) => {
     
     const reference = data[1] //get a reference pokemon to get the possible filters
 
@@ -68,13 +66,13 @@ app.post("/filters", (req, res) => {
     res.json(filters)
 });
 
-app.post('/search', (req, res) => {
+app.post('/search/search', (req, res) => {
     const body = req.body;
     const pokemon = body.pokemon;  // Form input name is "pokemon"
     const discoveredPokemon = getPokemonData(pokemon, body.type);
 
     // Read the HTML file and dynamically inject the Pokémon data
-    fs.readFile(path.join(__dirname, 'html', 'index.html'), 'utf8', (err, content) => {
+    fs.readFile(path.join(__dirname, 'html', 'search.html'), 'utf8', (err, content) => {
         if (err) {
             res.status(500).send('Error reading the HTML file');
             return;
@@ -88,7 +86,7 @@ app.post('/search', (req, res) => {
     });
 });
 
-app.post("/search-filtered", (req, res) => {
+app.post("/search/search-filtered", (req, res) => {
     const filters = req.body.filters;
 
     console.log(filters); // Logs an array of things like "Spawns", "Regional", etc.
@@ -111,6 +109,11 @@ app.post("/search-filtered", (req, res) => {
     });
 
     res.json({ answer: items });
+});
+
+
+app.post("/view/data-request", (req, res) => {
+    res.json(data)
 });
 
 

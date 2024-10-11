@@ -166,7 +166,7 @@
     }
 
     function getFiltersBackend() {
-        fetch('/filters', {
+        fetch('/search/filters', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -194,7 +194,7 @@
         }
 
         // Fetch request to send the Pokémon name
-        fetch('/search', {
+        fetch('/search/search', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -216,7 +216,7 @@
     }
 
     function searchFiltered(presentFilters) {
-        fetch('/search-filtered', {
+        fetch('/search/search-filtered', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

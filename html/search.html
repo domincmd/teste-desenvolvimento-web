@@ -10,6 +10,7 @@
     <div class="general-container">
         <div class="search-filter-container">
             <div class="search-container">
+                <h2>Search:</h1>
                 <span>Name:</span><br>
                 <input type="text" name="name-of-pokemon" id="name-of-pokemon">
                <button onclick="sendData('str')">Submit</button>
@@ -37,6 +38,7 @@
 const searchFilterContainer = document.querySelector(".search-filter-container")
 const viewContainer = document.querySelector(".view-container")
 const additionContainer = document.querySelector(".addition-container")
+
 
 function decodeAddition() {
     const properties = additionContainer.querySelectorAll(".prompt-addition")

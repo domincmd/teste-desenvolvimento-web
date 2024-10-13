@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Page Pokedex</title>
+    <link rel="stylesheet" href="../static/styles.css">
+    <style>
+        .general-container {
+
+        }
+
+        .smaller-container {
+            position: absolute;
+            top: 30%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .smaller-container > * {
+            margin: 15px;
+        }
+
+        button {
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="general-container">
+        <div class="smaller-container">
+            <h1>Welcome to the <b>Pokedex!</b></h1>
+            <h3>Feel free to edit the database!</h3>
+
+            <button onclick="">View the database</button>
+            <button onclick="">Edit the database</button>
+        </div>
+    </div>
+</body>
+</html>

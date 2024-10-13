@@ -55,9 +55,9 @@ app.get('/search', (req, res) => {
 
 app.post("/search/filters", (req, res) => {
     
-    const reference = data[1] //get a reference pokemon to get the possible filters
+    const reference = data[0] //get a reference pokemon to get the possible filters
 
-    const filters = Object.keys(reference).filter(key => reference[key] === 0 || reference[key] === 1)
+    const filters = Object.keys(reference).filter(key => reference[key] === "bool")
 
     //console.log(filters)
 
@@ -188,6 +188,15 @@ app.post("/search/add", (req, res) => {
 app.post("/view/data-request", (req, res) => {
     res.json(data)
 });
+
+
+//Return the JS files, now contained in the backend!
+app.get("/js/search.js", (req, res) => {
+    res.sendFile(path.join(__dirname, "js", "search.js"))
+})
+app.get("/js/view.js", (req, res) => {
+    res.sendFile(path.join(__dirname, "js", "view.js"))
+})
 
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "html", "index.html"));

@@ -1,42 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pokedéx</title>
-    <link rel="stylesheet" href="../static/styles.css">
-</head>
-<body>
-    <div class="general-container">
-        <div class="search-filter-container">
-            <div class="search-container">
-                <h2>Search:</h1>
-                <span>Name:</span><br>
-                <input type="text" name="name-of-pokemon" id="name-of-pokemon">
-               <button onclick="sendData('str')">Submit</button>
-               <button onclick="sendData('int')">Submit Int</button><br>
-            </div>
-            
-            
-
-
-        </div>
-        <div class="view-container">
-
-        </div>
-        <div class="action-container">
-            <button onclick="queryRemoval()">-</button>
-            <button onclick="promptAddition()">+</button><br>
-            <button onclick="queryUpdate()" class="double">Upd</button>
-        </div>
-        <div class="addition-container">
-            <h1>Add an element</h1>
-            
-        </div>
-    </div>
-</body>
-<script src="../js/search.js"></script>
-<script>
 const searchFilterContainer = document.querySelector(".search-filter-container")
 const viewContainer = document.querySelector(".view-container")
 const additionContainer = document.querySelector(".addition-container")
@@ -338,5 +299,3 @@ function searchFiltered(presentFilters, filterName) {
 //call functions
 
 getFiltersBackend()
-</script>
-</html>

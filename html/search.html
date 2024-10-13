@@ -40,6 +40,25 @@ const viewContainer = document.querySelector(".view-container")
 const additionContainer = document.querySelector(".addition-container")
 
 
+function fetchData(url, method, body = null) {
+    const options = {
+        method: method,
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    };
+
+    if (body) {
+        options.body = JSON.stringify(body);
+    }
+
+    return fetch(url, options)
+        .then(response => response.json())
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
+
 function decodeAddition() {
     const properties = additionContainer.querySelectorAll(".prompt-addition")
     const finalDict = {}
@@ -52,126 +71,84 @@ function decodeAddition() {
     return finalDict
 }
 
-
+// Refactored promptAddition
 function promptAddition() {
     additionContainer.style.display = "block";
 
-    fetch('/view/data-request', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        Object.keys(data[1]).forEach(key => {
-            const createdLabel = document.createElement("span");
-            createdLabel.textContent = `${key}`; // Display key and value
+    fetchData('/view/data-request', 'POST')
+        .then(data => {
+            Object.keys(data[1]).forEach(key => {
+                const createdLabel = document.createElement("span");
+                createdLabel.textContent = `${key}`; // Display key and value
 
-            const createdInput = document.createElement("input")
-            createdInput.type = "text"
-            createdInput.classList.add("prompt-addition")
-            createdInput.classList.add(key.replace(/ /g, "-"))
+                const createdInput = document.createElement("input")
+                createdInput.type = "text"
+                createdInput.classList.add("prompt-addition")
+                createdInput.classList.add(key.replace(/ /g, "-"))
 
-            additionContainer.appendChild(createdLabel)
-            additionContainer.appendChild(createdInput)
-            additionContainer.appendChild(document.createElement("br"))
-        });    
-        
-        const submitButton = document.createElement("button")
+                additionContainer.appendChild(createdLabel)
+                additionContainer.appendChild(createdInput)
+                additionContainer.appendChild(document.createElement("br"))
+            });    
+            
+            const submitButton = document.createElement("button")
 
-        submitButton.textContent = "Submit"
-        submitButton.addEventListener("click", e => {
-            const toAdd = decodeAddition()
+            submitButton.textContent = "Submit"
+            submitButton.addEventListener("click", e => {
+                const toAdd = decodeAddition()
 
-            queryAddition(toAdd)
+                queryAddition(toAdd)
 
-            const properties = additionContainer.querySelectorAll(".prompt-addition")
+                const properties = additionContainer.querySelectorAll(".prompt-addition")
 
-            properties.forEach(property => { 
-                property.value = "";
+                properties.forEach(property => { 
+                    property.value = "";
+                })
+
+                additionContainer.display = "none";
             })
 
-            additionContainer.display = "none";
-        })
-
-        additionContainer.appendChild(submitButton)
-
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
+            additionContainer.appendChild(submitButton)
+        });
 }
 
+// Refactored queryAddition
 function queryAddition(toAdd) {
-    //const toAdd = promptAddition();
-
-    //set what element to add here
-
-    fetch('/search/add', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(toAdd), // Send name as JSON
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.result != true) {
-            alert(data.status)
-        } else{
-            alert("successfully updated the database!")
-        }
-        
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
+    fetchData('/search/add', 'POST', toAdd)
+        .then(data => {
+            if (data.result != true) {
+                alert(data.status)
+            } else {
+                alert("successfully updated the database!")
+            }
+        });
 }
+
 
 function queryUpdate() {
-    fetch('/search/update', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        //body: JSON.stringify({ pokemon: pokemonI }), // Send name as JSON
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.result != true) {
-            alert(data.status)
-        } else{
-            alert("successfully updated the database!")
-        }
-        
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
+    fetchData('/search/update', 'POST')
+        .then(data => {
+            if (data.result != true) {
+                alert(data.status)
+            } else {
+                alert("successfully updated the database!")
+            }
+        });
 }
 
+// Refactored queryRemoval
 function queryRemoval() {
     if (viewContainer.querySelector(".card")) {
         const pokemonI = document.querySelector(".card").querySelector(".row").innerHTML.slice(5)
-        fetch('/search/remove', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ pokemon: pokemonI }), // Send name as JSON
-        })
-        .then(response => response.json())
-        .then(data => {
-            alert(data)
-            
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-
-
-    }else{
+        fetchData('/search/remove', 'POST', { pokemon: pokemonI })
+            .then(data => {
+                if (data.result != true) {
+                    alert(data.status)
+                } else {
+                    alert("successfully removed the item")
+                }
+            });
+    } else {
         alert("select a card before removing it!")
         return null;
     }
@@ -273,21 +250,10 @@ function displayData(data) {
 }
 
 function getFiltersBackend() {
-    fetch('/search/filters', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        }//,
-        //body: JSON.stringify({ message: "get checkboxes" }), // Send name as JSON
-    })
-    .then(response => response.json())
-    .then(data => {
-        searchFilterContainer.appendChild(displayFilters(data))
-        
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
+    fetchData('/search/filters', 'POST')
+        .then(data => {
+            searchFilterContainer.appendChild(displayFilters(data))
+        });
 }
 
 // Function to send data
@@ -300,53 +266,30 @@ function sendData(type) {
         return;
     }
 
-    // Fetch request to send the Pokémon name
-    fetch('/search/search', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ pokemon: pokemon, type: type }), // Send name as JSON
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Clear the view-container before displaying new data
-        const viewContainer = document.querySelector(".view-container");
-        viewContainer.innerHTML = ""; // Clear previous content
-        console.log(data.Name)
-        // Append the new card
-        viewContainer.appendChild(displayData(data));
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
+    fetchData('/search/search', 'POST', { pokemon: pokemon, type: type })
+        .then(data => {
+            const viewContainer = document.querySelector(".view-container");
+            viewContainer.innerHTML = ""; // Clear previous content
+            console.log(data.Name)
+            // Append the new card
+            viewContainer.appendChild(displayData(data));
+        });
+
 }
 
 function searchFiltered(presentFilters) {
-    fetch('/search/search-filtered', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ filters: presentFilters }), // Send name as JSON
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Clear the view-container before displaying new data
-        console.log(data)
-        const filtersDiv = displayFilterResults(data)
-        
-        if (searchFilterContainer.querySelector(".filter-results")) {
-            searchFilterContainer.removeChild(searchFilterContainer.querySelector(".filter-results"))
-        }
-        
-        searchFilterContainer.appendChild(filtersDiv)
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-}
+    fetchData('/search/search-filtered', 'POST', { filters: presentFilters })
+        .then(data => {
+            console.log(data)
+            const filtersDiv = displayFilterResults(data)
 
+            if (searchFilterContainer.querySelector(".filter-results")) {
+                searchFilterContainer.removeChild(searchFilterContainer.querySelector(".filter-results"))
+            }
+
+            searchFilterContainer.appendChild(filtersDiv)
+        });
+}
 
 //call functions
 

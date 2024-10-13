@@ -138,7 +138,7 @@ app.post("/search/remove", (req, res) => {
         data[i].Row -= 1;
     }
 
-    res.send("Pokemon removed successfully");
+    res.json({result: true, status: "completed successfully"})
 });
 
 app.post("/search/add", (req, res) => {

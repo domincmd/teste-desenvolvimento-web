@@ -6,9 +6,6 @@
     <title>Main Page Pokedex</title>
     <link rel="stylesheet" href="../static/styles.css">
     <style>
-        .general-container {
-
-        }
 
         .smaller-container {
             position: absolute;
@@ -27,6 +24,13 @@
             padding: 5px;
             border-radius: 5px;
         }
+
+        .bottom {
+            position: absolute;
+            bottom: 5px;
+            left: 5px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -35,9 +39,10 @@
             <h1>Welcome to the <b>Pokedex!</b></h1>
             <h3>Feel free to edit the database!</h3>
 
-            <button onclick="">View the database</button>
-            <button onclick="">Edit the database</button>
+            <button onclick="window.location.href='view'">View the database</button>
+            <button onclick="window.location.href='search'">Edit/Search the database</button>
         </div>
+        <span class="bottom">or... <a href="https://www.github.com/domincmd/teste-desenvolvimento-web">see the wiki</a></span>
     </div>
 </body>
 </html>

@@ -164,10 +164,20 @@ app.post("/search/remove", (req, res) => {
 app.post("/search/add", (req, res) => {
     const toAdd = req.body;
 
+    for (let i = 0; i < data.length; i++) {
+        if (toAdd.Name == data[i].Name) {
+            res.json({result: false, status: "this already exists!"})
+            return;
+        }
+    }
+
     data.splice(toAdd.Row-1, 0, toAdd)
 
     for (let i = toAdd.Row; i < data.length; i++) {  //start from the removed index
-        data[i].Row += 1;
+        if (data[i].Row != "int") {
+            data[i].Row += 1;
+        }
+        
     }
 
     console.log(data.slice(0, 5))

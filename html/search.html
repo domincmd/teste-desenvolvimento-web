@@ -62,15 +62,26 @@ function fetchData(url, method, body = null) {
 
 function decodeAddition() {
     const properties = additionContainer.querySelectorAll(".prompt-addition")
-    const finalDict = {}
+    let finalDict = {}
 
     properties.forEach(property => { 
-        finalDict[property.classList.item(1).replace(/-/g, " ")] = property.value // Fixed here
+        if (property.type == "text") {
+            finalDict[property.classList.item(1).replace(/-/g, " ")] = property.value
+        } else if (property.type == "number") {
+            if (property.value == "") {
+                finalDict[property.classList.item(1).replace(/-/g, " ")] = 0
+            }else{
+                finalDict[property.classList.item(1).replace(/-/g, " ")] = parseInt(property.value)
+            }
+            
+        } else if (property.type == "checkbox") {
+            finalDict[property.classList.item(1).replace(/-/g, " ")] = property.checked ? 1 : 0; // This line is sufficient
+        }
     })
 
-    //console.log(finalDict)
     return finalDict
 }
+
 
 // Refactored promptAddition
 function promptAddition() {
@@ -78,15 +89,17 @@ function promptAddition() {
 
     fetchData('/view/data-request', 'POST')
         .then(data => {
-            Object.keys(data[1]).forEach(key => {
+            Object.keys(data[0]).forEach(key => {
                 const createdLabel = document.createElement("span");
                 createdLabel.textContent = `${key}`; // Display key and value
 
                 const createdInput = document.createElement("input")
-                if (key != "Row") {
+                if (data[0][key] == "text") {
                     createdInput.type = "text"
-                }else{
+                }else if (data[0][key] == "int"){
                     createdInput.type = "number" //row is got to be a number so that this wokrs properly!
+                }else if (data[0][key] == "bool") {
+                    createdInput.type = "checkbox"
                 }
                 
                 createdInput.classList.add("prompt-addition")

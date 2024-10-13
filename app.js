@@ -85,29 +85,49 @@ app.post('/search/search', (req, res) => {
 });
 
 app.post("/search/search-filtered", (req, res) => {
-    const filters = req.body.filters;
+    const filters = req.body.filters; // Now an array of objects, e.g., [ { 'Cross Gen': false }, { Spawns: true } ]
+    const name = req.body.name;
 
-    console.log(filters); // Logs an array of things like "Spawns", "Regional", etc.
+    console.log(filters); // Logs an array of objects like { 'Cross Gen': false }
 
     let items = [];
 
-    data.forEach((datai) => {
+    data.forEach((datai) => { // for each element in our data (an array with dicts)
         let includeItem = true;
 
-        // Loop through the filters and check if datai meets the conditions
-        filters.forEach((filter) => {
-            if (!datai[filter] || datai[filter] === 0) {
+        filters.forEach((filterObj) => { 
+            // extract key and value from the filter object
+            const [filterKey, filterValueUnprocessed] = Object.entries(filterObj)[0]; //Shiny, true
+
+            let filterValue = 0
+
+            if (filterValueUnprocessed) {
+                filterValue = 1
+            }
+        
+
+            // If the item doesn't have the filterKey or its value doesn't match the filterValue, exclude it
+            if (!datai.hasOwnProperty(filterKey) || datai[filterKey] !== filterValue) {
                 includeItem = false;
             }
         });
 
+        // Maintain this condition for matching names
+        if (!datai["Name"].includes(name)) {
+            includeItem = false;
+        }
+
+        // If the item passes all filters, add it to the result
         if (includeItem) {
             items.push(datai);
         }
     });
 
+    
+
     res.json({ answer: items });
 });
+
 
 app.post("/search/update", (req, res) => {
 

@@ -18,7 +18,8 @@
             </div>
             
             
-            
+
+
         </div>
         <div class="view-container">
 
@@ -82,7 +83,12 @@ function promptAddition() {
                 createdLabel.textContent = `${key}`; // Display key and value
 
                 const createdInput = document.createElement("input")
-                createdInput.type = "text"
+                if (key != "Row") {
+                    createdInput.type = "text"
+                }else{
+                    createdInput.type = "number" //row is got to be a number so that this wokrs properly!
+                }
+                
                 createdInput.classList.add("prompt-addition")
                 createdInput.classList.add(key.replace(/ /g, "-"))
 
@@ -180,14 +186,22 @@ function getFiltersFrontend() {
         const currentDiv = filterDiv.childNodes[i];
 
         if (currentDiv.nodeType === 1) { // Ensure it's an element node
-            const filter = currentDiv.querySelector("span").textContent;
-            const filterState = currentDiv.querySelector("input").checked;
 
-            if (filterState) {
-                filters.push(filter)
+            if (currentDiv.tagName.toLowerCase() !== "div") {
+                console.log("Non-div element found, skipping...");
+                continue;
+            }
+            const filter = currentDiv.querySelector("span").textContent;
+            const filterInclude = currentDiv.querySelector(".include").checked;
+            const filterState = currentDiv.querySelector(".state").checked;
+
+            
+
+            if (filterInclude) {
+                filters.push({[filter]: filterState})
             }
 
-            console.log("FILTER: " + filter + "\nSTATE: " + filterState);
+            
         }
     }
 
@@ -199,12 +213,22 @@ function displayFilters(filters) {
     const filtersDiv = document.createElement("div")
     filtersDiv.classList.add("filter-container")
 
+    const labelFilterNameInput = document.createElement("span")
+    labelFilterNameInput.textContent = "Name: "
+    filtersDiv.appendChild(labelFilterNameInput) 
+
+    const filterNameInput = document.createElement("input")
+    filterNameInput.type = "text";
+    filterNameInput.classList.add("filter-name-input")
+    filtersDiv.appendChild(filterNameInput)
+
+
     const filterButton = document.createElement("button");
     filterButton.textContent = "Filter";
     filterButton.addEventListener("click", e => {
         const filters = getFiltersFrontend()
 
-        searchFiltered(filters)
+        searchFiltered(filters, document.querySelector(".filter-name-input").value)
         
     });
     
@@ -214,9 +238,15 @@ function displayFilters(filters) {
         currentDiv.classList.add("filter")
         currentDiv.classList.add(i)
 
-        const currentInput = document.createElement("input")
-        currentInput.type = "checkbox";
-        currentDiv.appendChild(currentInput)
+        const currentIncludeInput = document.createElement("input")
+        currentIncludeInput.type = "checkbox";
+        currentIncludeInput.classList.add("include")
+        currentDiv.appendChild(currentIncludeInput)
+
+        const currentStateInput = document.createElement("input")
+        currentStateInput.type = "checkbox";
+        currentStateInput.classList.add("state")
+        currentDiv.appendChild(currentStateInput)
 
         const currentInputText = document.createElement("span")
         currentInputText.textContent = filters[i]
@@ -224,7 +254,7 @@ function displayFilters(filters) {
 
         filtersDiv.appendChild(currentDiv)
     }
-
+    
     filtersDiv.appendChild(filterButton)
 
     return filtersDiv;
@@ -277,8 +307,8 @@ function sendData(type) {
 
 }
 
-function searchFiltered(presentFilters) {
-    fetchData('/search/search-filtered', 'POST', { filters: presentFilters })
+function searchFiltered(presentFilters, filterName) {
+    fetchData('/search/search-filtered', 'POST', { filters: presentFilters, name: filterName })
         .then(data => {
             console.log(data)
             const filtersDiv = displayFilterResults(data)
